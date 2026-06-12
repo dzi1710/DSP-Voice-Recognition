@@ -26,7 +26,7 @@
 
 
 
-## 1\.Phân tích Lý thuyết Toán học
+## 1.Phân tích Lý thuyết Toán học
 
 ***a. Tự tương quan (Autocorrelation) - Ứng dụng làm VAD***
 
@@ -37,7 +37,7 @@
 
 
 
-\-Ví dụ \& Ý nghĩa vật lý:Phép toán này lấy tín hiệu $x(n)$ trượt và nhân với chính nó. Tại độ trễ $l=0$, tín hiệu khớp hoàn toàn với chính nó, tạo ra đỉnh cực đại.Trong thực tế, giọng nói con người phát ra từ thanh quản có tính tuần hoàn, do đó $r\_{xx}(l)$ sẽ tạo ra các đỉnh lặp đi lặp lại. 
+\-Ví dụ \& Ý nghĩa vật lý:Phép toán này lấy tín hiệu $x(n)$ trượt và nhân với chính nó. Tại độ trễ $l=0$, tín hiệu khớp hoàn toàn với chính nó, tạo ra đỉnh cực đại.Trong thực tế, giọng nói con người phát ra từ thanh quản có tính tuần hoàn, do đó $r\_{xx}(l)$ sẽ tạo ra các đỉnh lặp đi lặp lại.
 
 \-Ngược lại, tiếng ồn ngẫu nhiên (tiếng quạt, gió) không có tính tuần hoàn nên $r\_{xx}(l)$ sẽ suy giảm rất nhanh về $0$. Hệ thống dựa vào điểm này để nhận diện khi nào bạn bắt đầu cất tiếng.
 
@@ -54,7 +54,7 @@
 
 Ví dụ minh họa:
 
-Giả sử tín hiệu thu được là $x(n) = \\{0, 1, 3, 1, 0\\}$ và tín hiệu mẫu lệnh "Bật" là $y(n) = \\{0, 1, 3, 1, 0\\}$. Khi thực hiện trượt tương quan chéo, tại thời điểm độ trễ $l = -2$, ta đạt được giá trị lớn nhất $\\max(r\_{xy}(l)) = r\_{xy}(-2) = 11$. 
+Giả sử tín hiệu thu được là $x(n) = \\{0, 1, 3, **1**, 0\\}$ và tín hiệu mẫu lệnh "Bật" là $y(n) = \\{0, **1**, 3, 1, 0\\}$. Khi thực hiện trượt tương quan chéo, tại thời điểm độ trễ $l = -2$, ta đạt được giá trị lớn nhất $\\max(r\_{xy}(l)) = r\_{xy}(-2) = 11$.
 
 Tại điểm này, tín hiệu $y(n)$ giống với tín hiệu $x(n)$ nhất. Áp dụng vào thực tế nhận diện:
 
@@ -64,5 +64,5 @@ Trong môi trường thực, tín hiệu Micro thu được thường có dạng
 
 
 
-Nhờ công thức này, giá trị luôn được giới hạn trong khoảng $|\\rho\_{xy}(l)| \[cite\_start]\\le 1$. Nếu $\\rho\_{xy}(l)$ vượt qua một ngưỡng (Threshold) định sẵn (ví dụ 0.8), hệ thống sẽ kết luận đã nhận diện thành công lệnh và xuất tín hiệu kích hoạt Relay.
+Nhờ công thức này, giá trị luôn được giới hạn trong khoảng $|\\rho\_{xy}(l)| \\le 1$. Nếu $\\rho\_{xy}(l)$ vượt qua một ngưỡng (Threshold) định sẵn (ví dụ 0.8), hệ thống sẽ kết luận đã nhận diện thành công lệnh và xuất tín hiệu kích hoạt Relay.
 
