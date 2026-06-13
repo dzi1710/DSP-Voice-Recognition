@@ -66,3 +66,43 @@ Trong môi trường thực, tín hiệu Micro thu được thường có dạng
 
 Nhờ công thức này, giá trị luôn được giới hạn trong khoảng $|\\rho\_{xy}(l)| \\le 1$. Nếu $\\rho\_{xy}(l)$ vượt qua một ngưỡng (Threshold) định sẵn (ví dụ 0.8), hệ thống sẽ kết luận đã nhận diện thành công lệnh và xuất tín hiệu kích hoạt Relay.
 
+
+
+## 2.Mô phỏng \& Phân tích Autocorrelation và CrossCorrelation trên py 
+
+***1. example\_cross\_correlation.py***
+
+Mô phỏng Tương quan chéo (Cross-Correlation) - Tìm kiếm sự tương đồng
+
+File này mô phỏng quá trình so sánh độ giống nhau giữa một tín hiệu đầu vào $x(n)$ và tín hiệu mẫu $y(n)$. Phép toán được thực hiện dựa trên công thức cốt lõi:
+
+$$r\_{xy}(l) = \\sum\_{n=-\\infty}^{\\infty} x(n)y(n-l)$$
+
+Điểm nhấn kỹ thuật:Thuật toán này hoạt động tương tự như Tổng nhân chập (Convolution Sum) nhưng không thực hiện phép gập tín hiệu (Folding/Time-reversal) trước khi nhân chập.Dữ liệu $y(n)$ sẽ được trượt dọc theo $x(n)$ qua từng độ trễ $l$. Thuật toán sẽ tìm ra chính xác mức độ trễ $l$ (Lag) mà tại đó hai tín hiệu khớp với nhau hoàn hảo nhất (giá trị $r\_{xy}$ đạt đỉnh cao nhất).
+
+
+
+***2. example\_auto\_correlation.py***
+
+Mô phỏng Tự tương quan (Auto-Correlation) 
+
+\- Phát hiện giọng nói (VAD)File này tập trung vào bài toán Voice Activity Detection (VAD) nhằm phân biệt rạch ròi giữa tiếng ồn môi trường (nhiễu trắng, gió, quạt) và tiếng người nói.
+
+Điểm nhấn kỹ thuật:Thay vì trượt tín hiệu toàn thời gian, thuật toán tối ưu hóa bằng cách chỉ tính hàm Tự tương quan tại độ trễ $l = 0$, tức là $r\_{xx}(0)$.Về mặt toán học, $r\_{xx}(0)$ chính là tổng năng lượng của khung tín hiệu.Khi hệ thống phát hiện tổng năng lượng vượt qua một mức Ngưỡng (Threshold) được thiết lập sẵn, cờ báo hiệu có giọng nói sẽ lập tức được kích hoạt. Thuật toán này chạy cực kỳ nhẹ bén và xử lý thời gian thực rất mượt mà.
+
+
+
+***3. example\_auto\_with\_cross\_correlation\_to\_detect\_voice.py***
+
+Đường ống nhận diện âm thanh toàn diện (Full VAD \& Matching Pipeline)
+
+Đây là phiên bản hoàn chỉnh ghép nối cả hai thuật toán trên lại với nhau, tạo thành một hệ thống nhận diện từ khóa (Keyword Spotting) tối ưu hóa tài nguyên phần cứng, cực kỳ phù hợp để đưa xuống lập trình C trên các dòng vi điều khiển tài nguyên thấp như 8051 hay STM32.
+
+Điểm nhấn kỹ thuật (Luồng hoạt động):
+
+**Bước 1 (Đi tuần):** Hệ thống sử dụng VAD (Auto-correlation) hoạt động liên tục với chi phí tính toán cực thấp để nghe ngóng môi trường. Phép toán Tương quan chéo nặng nề lúc này được đặt trong trạng thái ngủ (Sleep).
+
+**Bước 2 (Chuyền gậy):** Khi VAD phát hiện có tiếng người (năng lượng tăng vọt), nó lập tức cắt trích xuất đúng khung thời gian đó và "đánh thức" hàm Tương quan chéo.
+
+**Bước 3 (Giám định):** Hàm Tương quan chéo nhận dữ liệu thực tế, đem trượt với "Bản vẽ mẫu" (Template) của từ khóa đã lưu sẵn trong bộ nhớ. Nếu độ tương đồng $\\rho\_{xy}$ vượt ngưỡng, hệ thống xuất lệnh điều khiển Relay để đóng/ngắt thiết bị.
+
