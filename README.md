@@ -26,7 +26,7 @@
 
 
 
-## 1.Phân tích Lý thuyết Toán học
+## **1.Phân tích Lý thuyết Toán học**
 
 ***a. Tự tương quan (Autocorrelation) - Ứng dụng làm VAD***
 
@@ -68,7 +68,7 @@ Nhờ công thức này, giá trị luôn được giới hạn trong khoảng $
 
 
 
-## 2.Mô phỏng \& Phân tích Autocorrelation và CrossCorrelation trên py 
+## **2.Mô phỏng \& Phân tích Autocorrelation và CrossCorrelation trên py**
 
 ***1. example\_cross\_correlation.py***
 
@@ -84,7 +84,7 @@ $$r\_{xy}(l) = \\sum\_{n=-\\infty}^{\\infty} x(n)y(n-l)$$
 
 ***2. example\_auto\_correlation.py***
 
-Mô phỏng Tự tương quan (Auto-Correlation) 
+Mô phỏng Tự tương quan (Auto-Correlation)
 
 \- Phát hiện giọng nói (VAD)File này tập trung vào bài toán Voice Activity Detection (VAD) nhằm phân biệt rạch ròi giữa tiếng ồn môi trường (nhiễu trắng, gió, quạt) và tiếng người nói.
 
@@ -105,4 +105,28 @@ Mô phỏng Tự tương quan (Auto-Correlation)
 **Bước 2 (Chuyền gậy):** Khi VAD phát hiện có tiếng người (năng lượng tăng vọt), nó lập tức cắt trích xuất đúng khung thời gian đó và "đánh thức" hàm Tương quan chéo.
 
 **Bước 3 (Giám định):** Hàm Tương quan chéo nhận dữ liệu thực tế, đem trượt với "Bản vẽ mẫu" (Template) của từ khóa đã lưu sẵn trong bộ nhớ. Nếu độ tương đồng $\\rho\_{xy}$ vượt ngưỡng, hệ thống xuất lệnh điều khiển Relay để đóng/ngắt thiết bị.
+
+
+
+## **3. Thu âm \& Chuẩn bị dữ liệu mẫu**
+
+
+
+\*\*`record\_template.py` - Thu âm tín hiệu mẫu (Audio Templates) \& Tối ưu hóa cho Vi điều khiển\*\*
+
+
+
+File script này đóng vai trò là công cụ thu thập dữ liệu thực tế, cho phép ghi âm trực tiếp giọng nói của người dùng để tạo ra các "bản vẽ mẫu" (Templates) cho mệnh lệnh `BẬT` và `TẮT`. Các mẫu này sau đó sẽ được sử dụng làm tín hiệu tham chiếu cho hàm Tương quan chéo (Cross-Correlation).
+
+
+
+\*\*✨ Điểm nhấn kỹ thuật:\*\*
+
+
+
+\- \*\*Tối ưu hóa Tần số lấy mẫu (Sample Rate):\*\* Thay vì thu âm ở chuẩn CD âm nhạc (`44100 Hz`) gây phình to mảng dữ liệu, script này chủ động ép phần cứng thu âm ở chuẩn đàm thoại \*\*`8000 Hz`\*\* với kênh đơn (`Mono`). Quyết định cốt lõi này giúp giảm \*\*80%\*\* dung lượng, ngăn chặn tuyệt đối tình trạng tràn bộ nhớ (`Overflow RAM/Flash`) khi nạp thuật toán xuống các MCU tài nguyên thấp như họ `8051` hay `STM32`.
+
+\- \*\*Đồng bộ hóa quá trình thu (Blocking I/O):\*\* Áp dụng cơ chế chờ đồng bộ (hệ thống sleep cho đến khi người dùng nhấn phím `Enter` mới kích hoạt timer thu âm chính xác 1 giây). Kỹ thuật này giúp cắt bỏ hoàn toàn các khoảng lặng (Silence) vô ích ở đầu file, đảm bảo tín hiệu thu được chứa trọn vẹn mức năng lượng đậm đặc của từ khóa.
+
+\- \*\*Đầu ra chuẩn hóa:\*\* Âm thanh được trích xuất và đóng gói dưới định dạng `.wav` (`16-bit PCM`). Đây là chuẩn định dạng lý tưởng nhất để các Data Pipeline phía sau dễ dàng đọc, bóc tách và chuyển đổi thành mảng số nguyên tĩnh (`const int16\_t Array`) để nhúng trực tiếp vào mã nguồn C/C++.
 
